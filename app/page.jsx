@@ -40,14 +40,14 @@ export default function Home() {
           
           <input className="h-[60px] w-full border-2 border-indigo-600 p-[10px] rounded-[8px]" type="url" placeholder="Enter URL" onInput={(e)=>setUrl(e.target.value)} required/>
         </div>
-        <div className="mt-[20px] mr-[20px] inline-block">
+        {/* <div className="mt-[20px] mr-[20px] inline-block">
           <input id="all" className="" type="radio" placeholder="Enter URL"/>
           <label htmlFor="all">Check whole website</label>
         </div>
         <div className="mt-[20px] inline-block">
           <input id="single" className="" type="radio" placeholder="Enter URL"/>
           <label htmlFor="single">Check single webpage</label>
-        </div>
+        </div> */}
         <div className="text-center mt-[30px]">
           <button className="px-[15px] rounded-[8px] py-[5px] bg-indigo-600 text-white" onClick={getLinksFromWebsite}>
             Check
