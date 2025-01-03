@@ -1,5 +1,5 @@
 {
   "/page": "app/page.js",
   "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/api/entire-site-check-links/route": "app/api/entire-site-check-links/route.js"
+  "/api/check-links/route": "app/api/check-links/route.js"
 }
