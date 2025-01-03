@@ -52,6 +52,12 @@ export default function Home() {
       setLoading(false);
     }
   };
+
+  const handleClear = ()=>{
+    setLinks("")
+    setUrl("")
+    setFetchStatus("")
+  }
   
 
   return (
@@ -60,26 +66,32 @@ export default function Home() {
         <h3>Site Checker: Free Broken Link Tool</h3>
         <div className="mt-[30px] w-full">
           
-          <input className="h-[60px] w-full border-2 border-indigo-600 p-[10px] rounded-[8px]" type="url" placeholder="Enter URL" onInput={(e)=>setUrl(e.target.value)} required/>
+          <input className="h-[60px] w-full border-2 border-indigo-600 p-[10px] rounded-[8px]" type="url" placeholder="Enter URL" value={url} onInput={(e)=>setUrl(e.target.value)} required/>
         </div>
         <div className="text-center mt-[30px]">
           <button className="px-[15px] rounded-[8px] py-[5px] bg-indigo-600 text-white" onClick={handleSubmit}>
             Check
           </button>
+          {(fetchStatus == "fail" || fetchStatus == "success")  && (<button className="px-[15px] ml-[20px] rounded-[8px] py-[5px] bg-indigo-600 text-white" onClick={handleClear}>
+            clear
+          </button>) }
+          
         </div>
         
         <div className="flex flex-wrap">
           {console.log(fetchStatus)}
           {fetchStatus == "fail" ? (<Loader />) : ""}
-          {links?.linkStatus?.statusArr?.length && links?.linkStatus?.statusArr?.map((link,index)=>{
-            return (<Fragment key={index}>
-              <div className="w-[60%] p-[10px]">
-                {link.link}
-                </div>
-                <div className="w-[40%] p-[10px]">
-                    {link.status}
-                </div>
-            </Fragment>)
+          {links?.linkStatus?.length && links?.linkStatus?.map((link,index)=>{
+            if(link.status != 200){
+              return (<Fragment key={index}>
+                <div className="w-[60%] p-[10px]">
+                  {link.link}
+                  </div>
+                  <div className="w-[40%] p-[10px]">
+                      {link.status}
+                  </div>
+              </Fragment>)
+            }
           })}
           
         </div>

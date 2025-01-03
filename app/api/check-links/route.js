@@ -1,7 +1,6 @@
 import axios from 'axios';
-import * as cheerio from 'cheerio'; // Updated import
+import * as cheerio from 'cheerio'; 
 
-// This function will be invoked when the API route is hit
 export async function POST(req) {
   const { url } = await req.json();
 
@@ -11,24 +10,27 @@ export async function POST(req) {
     });
   }
 
+  const url1 = new URL(url); 
+  const baseUrl = `${url1.protocol}//${url1.host}`;
+
   try {
-    // Fetch the HTML content of the page
     const response = await axios.get(url);
     const html = response.data;
 
-    // Load HTML content into cheerio
     const $ = cheerio.load(html);
 
-    // Extract all the links (anchor tags)
     const links = [];
     $('a').each((i, element) => {
-      const href = $(element).attr('href');
+      let href = $(element).attr('href');
       if (href) {
+        if (href.startsWith('/') || !href.startsWith('http')) {
+          href = baseUrl + href; 
+        }
         links.push(href);
       }
     });
 
-    // Check the status of each link
+   
     const linkStatus = await checkLinkStatus(links);
 
     return new Response(JSON.stringify({ status: 'success', linkStatus }), {
@@ -45,11 +47,12 @@ export async function POST(req) {
 
 async function checkLinkStatus(links) {
   const statusArr = [];
-  for (const link of links) {
+  for (let link of links) {
     try {
       const res = await axios.get(link, { timeout: 5000 });
-      statusArr.push({ link, status: res.status });
-  
+      if(res.status != 200){
+        statusArr.push({ link, status: res.status });
+      }
     } catch (error) {
       statusArr.push({
         link,
@@ -57,5 +60,5 @@ async function checkLinkStatus(links) {
       });
     }
   }
-  return {statusArr};
+  return statusArr;  
 }
