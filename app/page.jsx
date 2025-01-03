@@ -26,7 +26,7 @@ export default function Home() {
     }
 
     try {
-      const response = await fetch('/api/check-links', {
+      const response = await fetch('/api/entire-site-check-links', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

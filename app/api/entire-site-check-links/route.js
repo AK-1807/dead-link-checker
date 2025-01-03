@@ -1,7 +1,8 @@
+import puppeteer from 'puppeteer';
 import axios from 'axios';
-import * as cheerio from 'cheerio'; 
-import { URL } from 'url'; 
+import * as cheerio from 'cheerio';
 
+const visited = new Set(); 
 
 export async function POST(req) {
   const { url } = await req.json();
@@ -12,14 +13,12 @@ export async function POST(req) {
     });
   }
 
-  const baseUrl = new URL(url).origin;
-  const visited = new Set();
-  const allLinks = []; 
+  const url1 = new URL(url);
+  const baseUrl = `${url1.protocol}//${url1.host}`;
 
   try {
-    await crawl(url, baseUrl, visited, allLinks);
-
-    const linkStatus = await checkLinkStatus(allLinks);
+    const links = await crawlSite(url, baseUrl);
+    const linkStatus = await checkLinkStatus(links);
 
     return new Response(JSON.stringify({ status: 'success', linkStatus }), {
       status: 200,
@@ -27,61 +26,89 @@ export async function POST(req) {
   } catch (error) {
     console.error(error);
     return new Response(
-      JSON.stringify({ error: 'Failed to crawl and check links' }),
+      JSON.stringify({ error: 'Failed to crawl the website' }),
       { status: 500 }
     );
   }
 }
 
 
-async function crawl(url, baseUrl, visited, allLinks, depth = 0, maxDepth = 3) {
-  if (visited.has(url) || depth > maxDepth) return; 
+async function crawlSite(url, baseUrl) {
+  const allLinks = [];
 
-  visited.add(url);
-  const config = {
-    timeout: 10000, 
-  };
+  while (linksToVisit.length > 0) {
+    const currentUrl = linksToVisit.pop();
+    if (visited.has(currentUrl)) continue;
 
-  try {
-    const response = await axios.get(url, config); 
-    const html = response.data;
-    const $ = cheerio.load(html);
+    visited.add(currentUrl); 
+
+    console.log(`Crawling page: ${currentUrl}`); 
+    const pageLinks = await extractLinks(currentUrl, baseUrl);
+    allLinks.push(...pageLinks);
 
   
+    for (const link of pageLinks) {
+      if (link.startsWith(baseUrl) && !visited.has(link)) {
+        linksToVisit.push(link);
+      }
+    }
+  }
+
+  return allLinks;
+}
+
+
+async function extractLinks(url, baseUrl) {
+  try {
+   
+    if (!isValidUrl(url)) {
+      console.error(`Skipping invalid URL: ${url}`);
+      return [];
+    }
+
+
+    const browser = await puppeteer.launch({ headless: true });
+    const page = await browser.newPage();
+    
+   
+    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36');
+
+    // Go to the URL and wait until the network is idle (all resources loaded)
+    console.log(`Navigating to: ${url}`);
+    await page.goto(url, { waitUntil: 'networkidle2' });
+
+    
+    const content = await page.content();
+    await browser.close();
+
+    
+    const $ = cheerio.load(content);
+    const links = [];
     $('a').each((i, element) => {
       let href = $(element).attr('href');
       if (href) {
-        href = normalizeLink(href, baseUrl);
-        if (href && !visited.has(href)) {
-        
-          allLinks.push(href); 
-         
-          if (href.startsWith(baseUrl)) {
-            setTimeout(() => crawl(href, baseUrl, visited, allLinks, depth + 1, maxDepth), 2000); // Throttle with a 2-second delay
-          }
+        if (href.startsWith('/') || !href.startsWith('http')) {
+          href = baseUrl + href; 
         }
+        links.push(href);
       }
     });
+
+    return links;
   } catch (error) {
-    if (error.response && error.response.status === 404) {
-      console.error(`404 Not Found: ${url}`);
-    } else {
-      console.error(`Failed to crawl ${url}:`, error.message);
-    }
+    console.error('Error extracting links from', url, error);
+    return [];
   }
 }
 
-function normalizeLink(href, baseUrl) {
+
+function isValidUrl(url) {
   try {
-    
-    if (href.startsWith('/') || !href.startsWith('http')) {
-      const url = new URL(href, baseUrl);
-      return url.href;
-    }
-    return href; 
+    new URL(url); 
+    return true;
   } catch (error) {
-    console.error(`Error normalizing link: ${href}`,error);
-    return null;
+    console.log(error)
+    return false;
   }
 }
 
@@ -99,5 +126,5 @@ async function checkLinkStatus(links) {
       });
     }
   }
-  return statusArr; 
+  return statusArr;
 }
