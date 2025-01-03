@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 15, "column": 0}, "map": {"version":3,"sources":["file:///Users/bb/sites/git%20repos/dead-link-checker/app/not-found.js"],"sourcesContent":["//app/not-found.js\n'use client'\nimport Link from 'next/link';\nimport { usePostHog } from 'posthog-js/react';\nimport { useEffect } from 'react';\n \nexport default function NotFound() {\n  const posthog = usePostHog();\n\n  useEffect(() => {\n    posthog.capture('not_found');\n  }, []);\n\n  return (\n    <div>\n      <h2>Not Found</h2>\n      <p>Could not find requested resource</p>\n      <p>\n        <Link href=\"/blog\">Go home</Link>\n      </p>\n    </div>\n  );\n}"],"names":[],"mappings":"AAAA,kBAAkB;;;;;AAElB;AACA;AACA;AAHA;;;;;AAKe,SAAS;IACtB,MAAM,UAAU,CAAA,GAAA,8JAAA,CAAA,aAAU,AAAD;IAEzB,CAAA,GAAA,qMAAA,CAAA,YAAS,AAAD,EAAE;QACR,QAAQ,OAAO,CAAC;IAClB,GAAG,EAAE;IAEL,qBACE,8OAAC;;0BACC,8OAAC;0BAAG;;;;;;0BACJ,8OAAC;0BAAE;;;;;;0BACH,8OAAC;0BACC,cAAA,8OAAC,4JAAA,CAAA,UAAI;oBAAC,MAAK;8BAAQ;;;;;;;;;;;;;;;;;AAI3B"}},
+    {"offset": {"line": 70, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}}]
+}

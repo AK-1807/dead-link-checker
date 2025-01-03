@@ -411,29 +411,13 @@ img, video {
   }
 }
 
-.relative {
-  position: relative;
-}
-
 .mx-auto {
   margin-left: auto;
   margin-right: auto;
 }
 
-.mr-\[20px\] {
-  margin-right: 20px;
-}
-
-.mt-\[20px\] {
-  margin-top: 20px;
-}
-
 .mt-\[30px\] {
   margin-top: 30px;
-}
-
-.inline-block {
-  display: inline-block;
 }
 
 .h-\[60px\] {
