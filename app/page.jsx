@@ -1,7 +1,7 @@
 "use client"
 import { useState } from "react";
 import { Fragment } from 'react';
-
+import Loader from "../components/loader"
 
 
 
@@ -14,13 +14,14 @@ export default function Home() {
   const [error, setError] = useState('');
 
   const [links, setLinks] = useState('');
+  const [fetchStatus, setFetchStatus] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
     setResult([]);
-
+    setFetchStatus("fail")
     if (!url) {
         alert("please enter URL");
         return;
@@ -34,12 +35,9 @@ export default function Home() {
         },
         body: JSON.stringify({ url }),
       });
-      console.log(object)
      
       const data = await response.json();
-      if(data){
-        setLoading(false)
-      }
+      setFetchStatus(data.status)
       console.log(data)
       setLinks(data)
       if (data.error) {
@@ -49,6 +47,7 @@ export default function Home() {
       }
     } catch (err) {
       setError('An error occurred while checking the links.');
+      console.log(err)
     } finally {
       setLoading(false);
     }
@@ -70,8 +69,9 @@ export default function Home() {
         </div>
         
         <div className="flex flex-wrap">
-          {console.log(links)}
-          {links.linkStatus.length && links?.linkStatus?.map((link,index)=>{
+          {console.log(fetchStatus)}
+          {fetchStatus == "fail" ? (<Loader />) : ""}
+          {links?.linkStatus?.statusArr?.length && links?.linkStatus?.statusArr?.map((link,index)=>{
             return (<Fragment key={index}>
               <div className="w-[60%] p-[10px]">
                 {link.link}

@@ -49,6 +49,7 @@ async function checkLinkStatus(links) {
     try {
       const res = await axios.get(link, { timeout: 5000 });
       statusArr.push({ link, status: res.status });
+  
     } catch (error) {
       statusArr.push({
         link,
@@ -56,5 +57,5 @@ async function checkLinkStatus(links) {
       });
     }
   }
-  return statusArr;
+  return {statusArr};
 }
