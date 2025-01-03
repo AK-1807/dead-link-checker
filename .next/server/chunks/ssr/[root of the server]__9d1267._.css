@@ -420,6 +420,10 @@ img, video {
   margin-top: 30px;
 }
 
+.flex {
+  display: flex;
+}
+
 .h-\[60px\] {
   height: 60px;
 }
@@ -428,8 +432,20 @@ img, video {
   width: 100%;
 }
 
+.w-\[40\%\] {
+  width: 40%;
+}
+
+.w-\[60\%\] {
+  width: 60%;
+}
+
 .max-w-\[1244px\] {
   max-width: 1244px;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
 }
 
 .rounded-\[8px\] {

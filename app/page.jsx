@@ -1,5 +1,6 @@
 "use client"
 import { useState } from "react";
+import { Fragment } from 'react';
 
 
 
@@ -12,11 +13,18 @@ export default function Home() {
   const [result, setResult] = useState([]);
   const [error, setError] = useState('');
 
+  const [links, setLinks] = useState('');
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
     setResult([]);
+
+    if (!url) {
+        alert("please enter URL");
+        return;
+    }
 
     try {
       const response = await fetch('/api/check-links', {
@@ -26,9 +34,14 @@ export default function Home() {
         },
         body: JSON.stringify({ url }),
       });
-
+      console.log(object)
+     
       const data = await response.json();
-      console.log(response)
+      if(data){
+        setLoading(false)
+      }
+      console.log(data)
+      setLinks(data)
       if (data.error) {
         setError(data.error);
       } else {
@@ -55,10 +68,23 @@ export default function Home() {
             Check
           </button>
         </div>
+        
+        <div className="flex flex-wrap">
+          {console.log(links)}
+          {links.linkStatus.length && links?.linkStatus?.map((link,index)=>{
+            return (<Fragment key={index}>
+              <div className="w-[60%] p-[10px]">
+                {link.link}
+                </div>
+                <div className="w-[40%] p-[10px]">
+                    {link.status}
+                </div>
+            </Fragment>)
+          })}
+          
+        </div>
        
       </div>
-
-    
     </section>
   );
 }
