@@ -1,5 +1,6 @@
+import puppeteer from 'puppeteer';
 import axios from 'axios';
-import * as cheerio from 'cheerio'; 
+import * as cheerio from 'cheerio';
 
 export async function POST(req) {
   const { url } = await req.json();
@@ -10,15 +11,23 @@ export async function POST(req) {
     });
   }
 
-  const url1 = new URL(url); 
+  const url1 = new URL(url);
   const baseUrl = `${url1.protocol}//${url1.host}`;
 
   try {
-    const response = await axios.get(url);
-    const html = response.data;
+    const browser = await puppeteer.launch({ headless: true });
+    const page = await browser.newPage();
 
-    const $ = cheerio.load(html);
+    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36');
 
+    await page.goto(url, { waitUntil: 'networkidle2' });
+
+   
+    const content = await page.content();
+    await browser.close(); 
+
+
+    const $ = cheerio.load(content);
     const links = [];
     $('a').each((i, element) => {
       let href = $(element).attr('href');
@@ -30,20 +39,21 @@ export async function POST(req) {
       }
     });
 
-   
+    
     const linkStatus = await checkLinkStatus(links);
 
     return new Response(JSON.stringify({ status: 'success', linkStatus }), {
       status: 200,
     });
   } catch (error) {
-    console.error(error);
+    console.error('Error in crawling:', error);
     return new Response(
       JSON.stringify({ error: 'Failed to fetch the URL or crawl the page' }),
       { status: 500 }
     );
   }
 }
+
 
 async function checkLinkStatus(links) {
   const statusArr = [];
@@ -60,5 +70,5 @@ async function checkLinkStatus(links) {
       });
     }
   }
-  return statusArr;  
+  return statusArr;
 }

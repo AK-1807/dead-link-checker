@@ -4,8 +4,6 @@ import { Fragment } from 'react';
 import Loader from "../components/loader"
 
 
-
-const proxyUrl = "https://cors-anywhere.herokuapp.com/";
 export default function Home() {
   const [url, setUrl] = useState("")
 
@@ -82,7 +80,6 @@ export default function Home() {
           {console.log(fetchStatus)}
           {fetchStatus == "fail" ? (<Loader />) : ""}
           {links?.linkStatus?.length && links?.linkStatus?.map((link,index)=>{
-            if(link.status != 200){
               return (<Fragment key={index}>
                 <div className="w-[60%] p-[10px]">
                   {link.link}
@@ -91,9 +88,8 @@ export default function Home() {
                       {link.status}
                   </div>
               </Fragment>)
-            }
           })}
-          
+          {links?.linkStatus?.length == 0 && (<h3>No Broken Link Found</h3>)}
         </div>
        
       </div>
