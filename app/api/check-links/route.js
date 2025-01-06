@@ -15,11 +15,7 @@ export async function POST(req) {
   const baseUrl = `${url1.protocol}//${url1.host}`;
 
   try {
-    // const browser = await puppeteer.launch({ headless: true });
-    const browser = await puppeteer.launch({
-      headless: true,
-      executablePath: '/usr/bin/chromium',  
-    });
+    const browser = await puppeteer.launch({ headless: true });
     
     const page = await browser.newPage();
 
@@ -64,7 +60,7 @@ async function checkLinkStatus(links) {
   const statusArr = [];
   for (let link of links) {
     try {
-      const res = await axios.get(link, { timeout: 10000 }); 
+      const res = await axios.get(link, { timeout: 5000 });
       // if(res.status != 200){
         statusArr.push({ link, status: res.status });
       // }
