@@ -15,7 +15,12 @@ export async function POST(req) {
   const baseUrl = `${url1.protocol}//${url1.host}`;
 
   try {
-    const browser = await puppeteer.launch({ headless: true });
+    // const browser = await puppeteer.launch({ headless: true });
+    const browser = await puppeteer.launch({
+      headless: true,
+      executablePath: '/usr/bin/chromium',  
+    });
+    
     const page = await browser.newPage();
 
     await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36');
@@ -59,10 +64,10 @@ async function checkLinkStatus(links) {
   const statusArr = [];
   for (let link of links) {
     try {
-      const res = await axios.get(link, { timeout: 5000 });
-      if(res.status != 200){
+      const res = await axios.get(link, { timeout: 10000 }); 
+      // if(res.status != 200){
         statusArr.push({ link, status: res.status });
-      }
+      // }
     } catch (error) {
       statusArr.push({
         link,
