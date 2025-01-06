@@ -29,6 +29,7 @@ export async function POST(req) {
 
 
     const $ = cheerio.load(content);
+    console.log($)
     const links = [];
     $('a').each((i, element) => {
       let href = $(element).attr('href');
